@@ -14,19 +14,32 @@ document.getElementById("registerForm").addEventListener("submit", async functio
             body: JSON.stringify({ name, email, password })
         });
 
-        const messageDiv = document.getElementById("message");
         if (response.ok) {
-            messageDiv.textContent = "Registro exitoso.";
-            messageDiv.style.color = "green";
+            localStorage.setItem('registrationMessage', 'Registro exitoso.');
+            localStorage.setItem('messageColor', 'green');
         } else {
             const errorText = await response.text();
-            messageDiv.textContent = `Error: ${errorText}`;
-            messageDiv.style.color = "red";
+            localStorage.setItem('registrationMessage', `Error: ${errorText}`);
+            localStorage.setItem('messageColor', 'red');
         }
+        location.reload();
     } catch (error) {
         console.error("Error:", error);
-        const messageDiv = document.getElementById("message");
-        messageDiv.textContent = `Error: ${error.message}`;
-        messageDiv.style.color = "red";
+        localStorage.setItem('registrationMessage', `Error: ${error.message}`);
+        localStorage.setItem('messageColor', 'red');
+        location.reload();
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    const messageDiv = document.getElementById("message");
+    const message = localStorage.getItem('registrationMessage');
+    const messageColor = localStorage.getItem('messageColor');
+
+    if (message) {
+        messageDiv.textContent = message;
+        messageDiv.style.color = messageColor;
+        localStorage.removeItem('registrationMessage');
+        localStorage.removeItem('messageColor');
     }
 });

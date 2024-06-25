@@ -1473,26 +1473,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Usuario\\.nuget\\packages\\": {}
+    "/home/riwip5-019/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Usuario\\OneDrive\\Escritorio\\ProjectMiniDrive\\Backend\\Mini-Drive\\Mini-Drive.csproj",
+      "projectUniqueName": "/home/riwip5-019/Mini-Drive-main/ProjectMiniDrive/Backend/Mini-Drive/Mini-Drive.csproj",
       "projectName": "Mini-Drive",
-      "projectPath": "C:\\Users\\Usuario\\OneDrive\\Escritorio\\ProjectMiniDrive\\Backend\\Mini-Drive\\Mini-Drive.csproj",
-      "packagesPath": "C:\\Users\\Usuario\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Usuario\\OneDrive\\Escritorio\\ProjectMiniDrive\\Backend\\Mini-Drive\\obj\\",
+      "projectPath": "/home/riwip5-019/Mini-Drive-main/ProjectMiniDrive/Backend/Mini-Drive/Mini-Drive.csproj",
+      "packagesPath": "/home/riwip5-019/.nuget/packages/",
+      "outputPath": "/home/riwip5-019/Mini-Drive-main/ProjectMiniDrive/Backend/Mini-Drive/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Usuario\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "/home/riwip5-019/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -1505,11 +1503,6 @@
         "warnAsError": [
           "NU1605"
         ]
-      },
-      "restoreAuditProperties": {
-        "enableAudit": "true",
-        "auditLevel": "low",
-        "auditMode": "direct"
       }
     },
     "frameworks": {
@@ -1560,7 +1553,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.105/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
