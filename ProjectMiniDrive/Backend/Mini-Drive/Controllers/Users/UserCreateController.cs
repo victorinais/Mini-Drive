@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using MimeKit;
 using Mini_Drive.Models;
 using Mini_Drive.Services.Users;
@@ -13,9 +17,11 @@ namespace Mini_Drive.Controllers.Users
     public class UserCreateController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
-        public UserCreateController(IUserRepository userRepository)
+        private readonly string _secretKey = "dbc3225d7d14f5b783e3dd685f66d87aa9d94dc758e8ef6b9fad80c695e4d98f";
+        public UserCreateController(IUserRepository userRepository, IConfiguration configuration)
         {
             _userRepository = userRepository;
+            
         }
 
         [HttpPost]
@@ -24,7 +30,7 @@ namespace Mini_Drive.Controllers.Users
         {
             if (user == null)
             {
-                return BadRequest("User data is null.");
+                return BadRequest("Los datos del usuario son nulos.");
             }
 
             try
@@ -69,7 +75,7 @@ namespace Mini_Drive.Controllers.Users
 
             using (var client = new SmtpClient())
             {
-                 try
+                try
                 {
                     client.Connect("smtp.gmail.com", 587, false);
                     client.Authenticate("pruebariwi@gmail.com", "cijm vdzz fmza opwu"); // Usa la contraseña de la aplicación aquí
@@ -96,5 +102,38 @@ namespace Mini_Drive.Controllers.Users
                 }
             }
         }
+
+        [HttpPost]
+        [Route("api/login")]
+        public IActionResult Login([FromBody] Login login)
+        {
+            var user = _userRepository.GetAll().FirstOrDefault(u => u.Email == login.Email);
+
+            if (user == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.Password))
+            {
+                return Unauthorized("Correo electrónico o contraseña incorrectos.");
+            }
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_secretKey);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, user.Id.ToString()),
+                    new Claim("id", user.Id.ToString())
+                }),
+                Expires = DateTime.UtcNow.AddHours(1),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var tokenString = tokenHandler.WriteToken(token);
+
+            return Ok(new { Token = tokenString });
+        }
+
+       
     }
 }

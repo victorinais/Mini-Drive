@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="stylesDasboard.css">
+    <title>Mini-Drive Dashboard</title>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Mini-Drive</h1>
+            <button id="logoutBtn">Cerrar Sesión</button>
+        </header>
+        <main>
+            <button id="createFolderBtn">Crear Nueva Carpeta</button>
+            <div id="foldersContainer"></div>
+        </main>
+    </div>
+
+    <!-- Modal for creating new folder -->
+    <div id="createFolderModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Crear Nueva Carpeta</h2>
+            <form id="createFolderForm">
+                <label for="folderName">Nombre de la Carpeta:</label>
+                <input type="text" id="folderName" name="folderName" required>
+                <button type="submit">Crear</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="scriptDashboard.js"></script>
+</body>
+</html>
