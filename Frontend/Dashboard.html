@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="stylesDashboard.css" />
+</head>
+
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="#" id="createFolderBtn">Crear Carpeta</a></li>
+                <li><a href="#" id="logoutBtn">Cerrar Sesión</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="folders-section">
+            <h2>Dashboard Carpetas</h2>
+            <div id="foldersContainer" class="content-container"></div>
+        </section>
+        <section class="files-section">
+            <h2>Dashboard Archivos</h2>
+            <div id="filesContainer" class="content-container"></div>
+        </section>
+    </main>
+
+    <div id="errorMessage" class="error-message"></div>
+    <div id="successMessage" class="success-message"></div>
+
+    <!-- Modal de creación de carpeta -->
+    <div id="createFolderModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form id="createFolderForm">
+                <label for="folderName">Nombre de la Carpeta:</label>
+                <input type="text" id="folderName" name="folderName" required />
+                <button type="submit" class="btn-create">Crear</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de creación de archivo -->
+    <div id="createFileModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form id="createFileForm">
+                <label for="fileName">Nombre del Archivo:</label>
+                <input type="text" id="fileName" name="fileName" required />
+                <label for="filePath">Ruta del Archivo:</label>
+                <input type="text" id="filePath" name="filePath" required />
+                <label for="fileType">Tipo de Archivo:</label>
+                <input type="text" id="fileType" name="fileType" required />
+                <label for="fileSize">Tamaño del Archivo (bytes):</label>
+                <input type="number" id="fileSize" name="fileSize" required />
+                <button type="submit" class="btn-create">Crear</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación de cierre de sesión -->
+    <div id="logoutModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>¿Estás seguro de que quieres cerrar sesión?</p>
+            <button id="confirmLogoutBtn">Sí, cerrar sesión</button>
+            <button id="cancelLogoutBtn">Cancelar</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="scriptDashboard.js"></script>
+</body>
+
+</html>
