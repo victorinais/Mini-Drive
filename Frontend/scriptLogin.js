@@ -18,9 +18,10 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
         messageDiv.textContent = "Inicio de sesión exitoso. Redirigiendo...";
         messageDiv.className = "success"
 
-        // Guardar el token en el almacenamiento local
+        // Guardar el token y el nombre de usuario en el almacenamiento local
         localStorage.setItem("token", data.token);
-        sessionStorage.setItem("loggedIn", true);
+        localStorage.setItem("username", data.username);
+        localStorage.setItem("loggedin", "true");
 
         // Redirigir después de 1 segundo al Dashboard
         setTimeout(() => {

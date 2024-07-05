@@ -1,13 +1,8 @@
-if (!sessionStorage.getItem("loggedIn")) {
-    window.location.href = "index.html"; // Redirige a la página de inicio de sesión si no hay sesión iniciada
-}
-
 document.addEventListener("DOMContentLoaded", function () {
     const createFolderBtn = document.getElementById("createFolderBtn");
     const createFolderModal = document.getElementById("createFolderModal");
     const closeModal = document.getElementsByClassName("close");
     const createFolderForm = document.getElementById("createFolderForm");
-    const createFileForm = document.getElementById("createFileForm");
     const foldersContainer = document.getElementById("foldersContainer");
     const filesContainer = document.getElementById("filesContainer");
     const logoutBtn = document.getElementById("logoutBtn");
@@ -18,7 +13,22 @@ document.addEventListener("DOMContentLoaded", function () {
     const API_BASE_URL = "http://localhost:5231/api"; // Ruta actualizada
     const TOKEN = "Bearer " + localStorage.getItem("token"); // Reemplaza con el token real
 
+     // Verifica si el usuario está autenticado
+     const isLoggedIn = localStorage.getItem("loggedin") === "true";
+
+     if (!isLoggedIn) {
+        // Si el usuario no está autenticado, redirige a la página de inicio de sesión
+        window.location.href = "login.html";
+    }
+
     let selectedFolderId = null;
+
+    // Mostrar el nombre del usuario
+    const usernameDisplay = document.getElementById("usernameDisplay");
+    const username = localStorage.getItem("username");
+    if (username) {
+        usernameDisplay.textContent = `${username}`;
+    }
 
     // Abrir el modal
     // Verifica que los elementos existan antes de usarlos
@@ -33,7 +43,6 @@ document.addEventListener("DOMContentLoaded", function () {
         Array.from(closeModal).forEach((element) => {
             element.onclick = function () {
                 createFolderModal.style.display = "none";
-                createFileModal.style.display = "none";
                 logoutModal.style.display = "none";
             };
         });
@@ -43,9 +52,6 @@ document.addEventListener("DOMContentLoaded", function () {
     window.onclick = function (event) {
         if (event.target === createFolderModal) {
             createFolderModal.style.display = "none";
-        }
-        if (event.target === createFileModal) {
-            createFileModal.style.display = "none";
         }
         if (event.target === logoutModal) {
             logoutModal.style.display = "none";
@@ -69,41 +75,6 @@ document.addEventListener("DOMContentLoaded", function () {
             if (response.ok) {
                 showSuccess("¡Carpeta creada con éxito!.");
                 createFolderModal.style.display = "none";
-                fetchFolders();
-            } else {
-                const errorText = await response.text();
-                showError(`Error: ${errorText}`);
-            }
-        };
-    }
-
-    // Crear modal de formulario de archivo
-    if (createFileForm) {
-        createFileForm.onsubmit = async function (event) {
-            event.preventDefault();
-            const fileName = document.getElementById("fileName").value;
-            const filePath = document.getElementById("filePath").value;
-            const fileType = document.getElementById("fileType").value;
-            const fileSize = document.getElementById("fileSize").value;
-
-            const response = await fetch(`${API_BASE_URL}/files/create`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: TOKEN,
-                },
-                body: JSON.stringify({
-                    name: fileName,
-                    path: filePath,
-                    type: fileType,
-                    size: fileSize,
-                    folderId: selectedFolderId,
-                }),
-            });
-
-            if (response.ok) {
-                showSuccess("¡Archivo creado con éxito!.");
-                createFileModal.style.display = "none";
                 fetchFolders();
             } else {
                 const errorText = await response.text();
@@ -159,15 +130,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 <div class="folder-options">
                     <button class="options-btn">...</button>
                     <div class="options-menu" style="display: none;">
-                        <button class="create-folder-btn">Crear Carpeta</button>
-                        <button class="create-file-btn">Crear Archivo</button>
-                        <button class="delete-folder-btn">Eliminar Carpeta</button>
+                        <button class="delete-folder-btn">Elimiar Carpeta</button>
                     </div>
                 </div>
             `;
             // Verifica que los botones existan antes de agregarles eventos
             const optionsBtn = folderDiv.querySelector(".options-btn");
-            const createFileBtn = folderDiv.querySelector(".create-file-btn");
             const deleteFolderBtn = folderDiv.querySelector(".delete-folder-btn");
 
             if (optionsBtn) {
@@ -177,14 +145,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (menu) {
                         menu.style.display = menu.style.display === "none" ? "block" : "none";
                     }
-                });
-            }
-
-            if (createFileBtn) {
-                createFileBtn.addEventListener("click", (event) => {
-                    event.stopPropagation();
-                    selectedFolderId = folder.id;
-                    createFileModal.style.display = "block";
                 });
             }
 
@@ -292,14 +252,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 3000); // Ocultar después de 3 segundos
     }
 
-    // botón Cerrar sesión
-    logoutBtn.onclick = function () {
-        if (confirm("¿Estás seguro de que quieres cerrar sesión?")) {
-            localStorage.removeItem("token");
-            window.location.href = "index.html"; // Redirect to index.html
-        }
-    };
-
     // Mostrar el modal de confirmación de cierre de sesión
     logoutBtn.onclick = function () {
         logoutModal.style.display = "block";
@@ -308,7 +260,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // Confirmar cierre de sesión
     confirmLogoutBtn.onclick = function () {
         localStorage.removeItem("token");
-        sessionStorage.removeItem("loggedIn"); // Remove loggedIn flag from sessionStorage
+        localStorage.removeItem("username");
+        localStorage.removeItem("loggedin");
         window.location.href = "index.html"; // Redirigir a index.html
     };
 

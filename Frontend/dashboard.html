@@ -14,11 +14,9 @@
     <header>
         <nav>
             <ul>
-                <li><i class="bi bi-hdd"></i> Mini-Drive</li>
-                <li><a href="index.html">Inicio</a></li>
                 <li><a href="#" id="createFolderBtn">Crear Carpeta</a></li>
                 <li><a href="#" id="logoutBtn">Cerrar Sesión</a></li>
-                <li><span></span></li>
+                <li><i class="bi bi-person-fill-check"></i><span id="usernameDisplay"></span></li>
             </ul>
         </nav>
     </header>
@@ -44,24 +42,6 @@
             <form id="createFolderForm">
                 <label for="folderName">Nombre de la Carpeta:</label>
                 <input type="text" id="folderName" name="folderName" required />
-                <button type="submit" class="btn-create">Crear</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal de creación de archivo -->
-    <div id="createFileModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <form id="createFileForm">
-                <label for="fileName">Nombre del Archivo:</label>
-                <input type="text" id="fileName" name="fileName" required />
-                <label for="filePath">Ruta del Archivo:</label>
-                <input type="text" id="filePath" name="filePath" required />
-                <label for="fileType">Tipo de Archivo:</label>
-                <input type="text" id="fileType" name="fileType" required />
-                <label for="fileSize">Tamaño del Archivo (bytes):</label>
-                <input type="number" id="fileSize" name="fileSize" required />
                 <button type="submit" class="btn-create">Crear</button>
             </form>
         </div>
