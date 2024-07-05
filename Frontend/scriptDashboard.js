@@ -1,7 +1,3 @@
-if (!sessionStorage.getItem("loggedIn")) {
-    window.location.href = "index.html"; // Redirige a la página de inicio de sesión si no hay sesión iniciada
-}
-
 document.addEventListener("DOMContentLoaded", function () {
     const createFolderBtn = document.getElementById("createFolderBtn");
     const createFolderModal = document.getElementById("createFolderModal");
@@ -19,6 +15,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const TOKEN = "Bearer " + localStorage.getItem("token"); // Reemplaza con el token real
 
     let selectedFolderId = null;
+
+    // Mostrar el nombre del usuario
+    const usernameDisplay = document.getElementById("usernameDisplay");
+    const username = localStorage.getItem("username");
+    if (username) {
+        usernameDisplay.textContent = `Bienvenido, ${username}`;
+    }
 
     // Abrir el modal
     // Verifica que los elementos existan antes de usarlos
@@ -159,9 +162,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 <div class="folder-options">
                     <button class="options-btn">...</button>
                     <div class="options-menu" style="display: none;">
-                        <button class="create-folder-btn">Crear Carpeta</button>
                         <button class="create-file-btn">Crear Archivo</button>
-                        <button class="delete-folder-btn">Eliminar Carpeta</button>
+                        <button class="delete-folder-btn">Elimiar Carpeta</button>
                     </div>
                 </div>
             `;
@@ -308,7 +310,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // Confirmar cierre de sesión
     confirmLogoutBtn.onclick = function () {
         localStorage.removeItem("token");
-        sessionStorage.removeItem("loggedIn"); // Remove loggedIn flag from sessionStorage
         window.location.href = "index.html"; // Redirigir a index.html
     };
 

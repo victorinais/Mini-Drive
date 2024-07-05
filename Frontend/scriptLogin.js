@@ -20,7 +20,7 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
 
         // Guardar el token en el almacenamiento local
         localStorage.setItem("token", data.token);
-        sessionStorage.setItem("loggedIn", true);
+        localStorage.setItem
 
         // Redirigir después de 1 segundo al Dashboard
         setTimeout(() => {
