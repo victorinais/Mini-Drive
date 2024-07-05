@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Mini_Drive.Data;
+using Mini_Drive.Services.Auth;
 using Mini_Drive.Services.Files;
 using Mini_Drive.Services.Folders;
 using Mini_Drive.Services.Users;
@@ -21,6 +22,7 @@ builder.Services.AddDbContext<BaseContext>(options => options
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IFolderRepository, FolderRepository>();
 builder.Services.AddScoped<IFileRepository, FileRepository>();
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 
 // Configuración de JWT
 var key = Encoding.ASCII.GetBytes("dbc3225d7d14f5b783e3dd685f66d87aa9d94dc758e8ef6b9fad80c695e4d98f");

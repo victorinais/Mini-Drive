@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MimeKit;
 using Mini_Drive.Models;
+using Mini_Drive.Services.Auth;
 using Mini_Drive.Services.Users;
 
 namespace Mini_Drive.Controllers.Users
@@ -17,11 +18,12 @@ namespace Mini_Drive.Controllers.Users
     public class UserCreateController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
-        private readonly string _secretKey = "dbc3225d7d14f5b783e3dd685f66d87aa9d94dc758e8ef6b9fad80c695e4d98f";
-        public UserCreateController(IUserRepository userRepository, IConfiguration configuration)
+        private readonly IAuthRepository _authRepository;
+        
+        public UserCreateController(IUserRepository userRepository, IAuthRepository authRepository)
         {
             _userRepository = userRepository;
-            
+            _authRepository = authRepository;
         }
 
         [HttpPost]
@@ -105,35 +107,17 @@ namespace Mini_Drive.Controllers.Users
 
         [HttpPost]
         [Route("api/login")]
-        public IActionResult Login([FromBody] Login login)
+        public async Task<IActionResult> Login([FromBody] Login login)
         {
-            var user = _userRepository.GetAll().FirstOrDefault(u => u.Email == login.Email);
+             var authResult = await _authRepository.Authenticate(login.Email!, login.Password!);
 
-            if (user == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.Password))
+            if (authResult == null)
             {
                 return Unauthorized("Correo electrónico o contraseña incorrectos.");
             }
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_secretKey);
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, user.Id.ToString()),
-                    new Claim("id", user.Id.ToString())
-                }),
-                Expires = DateTime.UtcNow.AddHours(1),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            var tokenString = tokenHandler.WriteToken(token);
-
-            return Ok(new { Token = tokenString, });
+            return Ok(authResult);
         }
 
-       
     }
 }
