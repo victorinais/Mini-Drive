@@ -1782,19 +1782,19 @@
     ]
   },
   "packageFolders": {
-    "/home/riwip5-020/.nuget/packages/": {}
+    "/home/riwip5-040/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/riwip5-020/Downloads/Mini-Drive-kan-11/ProjectMiniDrive/Backend/Mini-Drive/Mini-Drive.csproj",
+      "projectUniqueName": "/home/riwip5-040/Music/Mini-Drive-kan-14/Backend/Mini-Drive/Mini-Drive.csproj",
       "projectName": "Mini-Drive",
-      "projectPath": "/home/riwip5-020/Downloads/Mini-Drive-kan-11/ProjectMiniDrive/Backend/Mini-Drive/Mini-Drive.csproj",
-      "packagesPath": "/home/riwip5-020/.nuget/packages/",
-      "outputPath": "/home/riwip5-020/Downloads/Mini-Drive-kan-11/ProjectMiniDrive/Backend/Mini-Drive/obj/",
+      "projectPath": "/home/riwip5-040/Music/Mini-Drive-kan-14/Backend/Mini-Drive/Mini-Drive.csproj",
+      "packagesPath": "/home/riwip5-040/.nuget/packages/",
+      "outputPath": "/home/riwip5-040/Music/Mini-Drive-kan-14/Backend/Mini-Drive/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/riwip5-020/.nuget/NuGet/NuGet.Config"
+        "/home/riwip5-040/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"

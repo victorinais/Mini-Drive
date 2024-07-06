@@ -22,15 +22,58 @@ namespace Mini_Drive.Controllers.Files
         }
 
         [HttpPost("create")]
-         public IActionResult CreateFile([FromBody] ModelFile file)
+        public IActionResult CreateFile([FromForm] IFormFile file, [FromForm] int folderId)
         {
-            if (file == null)
+            if (file == null || file.Length == 0)
             {
-                return BadRequest("Datos de archivo inválidos.");
+                return BadRequest("Archivo no válido.");
             }
 
-            _fileRepository.Add(file);
-            return Ok(new { message = "Archivo creado con éxito.", file });
+            var folder = _folderRepository.GetById(folderId);
+            if (folder == null)
+            {
+                return BadRequest("Carpeta no válida.");
+            }
+
+            // Define the path where the file will be saved
+            var storagePath = Path.Combine("path", "to", "save"); // Actualiza esta ruta según tu lógica de almacenamiento
+
+            // Create the directory if it doesn't exist
+            if (!Directory.Exists(storagePath))
+            {
+                Directory.CreateDirectory(storagePath);
+            }
+
+            var filePath = Path.Combine(storagePath, file.FileName);
+
+            try
+            {
+                // Guardar el archivo en el sistema de archivos
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    file.CopyTo(stream);
+                }
+
+                // Guardar la información del archivo en la base de datos
+                var modelFile = new ModelFile
+                {
+                    Name = file.FileName,
+                    Path = filePath,
+                    Type = file.ContentType,
+                    Size = file.Length,
+                    FolderId = folderId
+                };
+
+                _fileRepository.Add(modelFile);
+
+                return Ok(new { message = "Archivo creado con éxito.", file = modelFile });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                Console.WriteLine(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error al subir el archivo.");
+            }
         }
     }
 }
