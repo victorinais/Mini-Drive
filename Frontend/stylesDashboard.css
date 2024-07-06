@@ -1,3 +1,7 @@
+body, html {
+    height: 100%;
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -41,22 +45,19 @@ nav ul li a:hover {
 }
 
 main {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    height: calc(100% - 60px); /* Ajustar según la altura del header */
+    padding: 0 20px;
 }
 
 .folders-section, .files-section {
-    margin-bottom: 10px;
+    flex: 1;
+    overflow-y: auto;
+    margin: 10px;
     padding: 20px;
     border: 1px solid #ddd;
     border-radius: 8px;
     background-color: #fff;
-}
-
-.folders-section {
-    margin-bottom: 25px;
 }
 
 .content-container {
@@ -75,7 +76,7 @@ main {
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    z-index: 1000; /* Asegurarse de que esté por encima de otros elementos */
+    z-index: 10; /* Asegurarse de que esté por encima de otros elementos */
     text-align: center; /* Centrar el texto */
     max-width: 80%;
     margin: auto;
@@ -98,15 +99,17 @@ main {
     padding: 20px;
     border-radius: 5px;
     cursor: pointer;
-    width: calc(33.333% - 20px); 
+    width: auto;
+    height: auto;
     text-align: center;
     background-color: #f9f9f9;
     transition: background-color 0.3s, transform 0.3s;
     margin-bottom: 5px;
+    overflow: visible;
 }
 
-.item, .folder:hover, .file:hover, .sub-folder:hover {
-    background-color: #f0f0f0;
+.item:hover, .folder:hover, .file:hover, .sub-folder:hover {
+    background-color: #e0e0e0;
     transform: translateY(-5px);
 }
 
@@ -284,7 +287,6 @@ main {
     background-color: #45a049;
 }
 
-
 #fileName, #filePath, #fileType, #fileSize {
     width: calc(100% - 22px); 
     padding: 10px;
@@ -366,4 +368,10 @@ footer {
     position: absolute;
     bottom: 0;
     width: 100%;
+}
+
+/* Estilos específicos para el span del nombre de usuario */
+#usernameDisplay {
+    font-weight: bold; /* Texto en negrita */
+    margin-left: 5px;
 }

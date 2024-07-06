@@ -1,40 +1,51 @@
-if (!sessionStorage.getItem("loggedIn")) {
-    window.location.href = "index.html"; // Redirige a la página de inicio de sesión si no hay sesión iniciada
-}
-
 document.addEventListener("DOMContentLoaded", function () {
     const createFolderBtn = document.getElementById("createFolderBtn");
     const createFolderModal = document.getElementById("createFolderModal");
     const closeModal = document.getElementsByClassName("close");
     const createFolderForm = document.getElementById("createFolderForm");
-    const createFileForm = document.getElementById("createFileForm");
     const foldersContainer = document.getElementById("foldersContainer");
     const filesContainer = document.getElementById("filesContainer");
     const logoutBtn = document.getElementById("logoutBtn");
     const logoutModal = document.getElementById("logoutModal");
     const confirmLogoutBtn = document.getElementById("confirmLogoutBtn");
     const cancelLogoutBtn = document.getElementById("cancelLogoutBtn");
+    const uploadFileModal = document.getElementById("uploadFileModal");
+    const uploadFileForm = document.getElementById("uploadFileForm");
 
     const API_BASE_URL = "http://localhost:5231/api"; // Ruta actualizada
     const TOKEN = "Bearer " + localStorage.getItem("token"); // Reemplaza con el token real
 
+    // Verifica si el usuario está autenticado
+    const isLoggedIn = localStorage.getItem("loggedin") === "true";
+
+    if (!isLoggedIn) {
+        // Si el usuario no está autenticado, redirige a la página de inicio de sesión
+        window.location.href = "login.html";
+    }
+
     let selectedFolderId = null;
 
-    // Abrir el modal
-    // Verifica que los elementos existan antes de usarlos
+    // Mostrar el nombre del usuario
+    const usernameDisplay = document.getElementById("usernameDisplay");
+    const username = localStorage.getItem("username");
+    if (username) {
+        usernameDisplay.textContent = `${username}`;
+    }
+
+    // Abrir el modal para crear carpeta
     if (createFolderBtn) {
         createFolderBtn.onclick = function () {
             createFolderModal.style.display = "block";
         };
     }
 
-    // Cerrar el modal
+    // Cerrar los modales
     if (closeModal.length) {
         Array.from(closeModal).forEach((element) => {
             element.onclick = function () {
                 createFolderModal.style.display = "none";
-                createFileModal.style.display = "none";
                 logoutModal.style.display = "none";
+                uploadFileModal.style.display = "none";
             };
         });
     }
@@ -44,15 +55,15 @@ document.addEventListener("DOMContentLoaded", function () {
         if (event.target === createFolderModal) {
             createFolderModal.style.display = "none";
         }
-        if (event.target === createFileModal) {
-            createFileModal.style.display = "none";
+        if (event.target === uploadFileModal) {
+            uploadFileModal.style.display = "none";
         }
         if (event.target === logoutModal) {
             logoutModal.style.display = "none";
         }
     };
 
-    // Crear modal de formulario de carpeta
+    // Crear carpeta
     if (createFolderForm) {
         createFolderForm.onsubmit = async function (event) {
             event.preventDefault();
@@ -77,34 +88,34 @@ document.addEventListener("DOMContentLoaded", function () {
         };
     }
 
-    // Crear modal de formulario de archivo
-    if (createFileForm) {
-        createFileForm.onsubmit = async function (event) {
+    // Subir archivo
+    if (uploadFileForm) {
+        uploadFileForm.onsubmit = async function (event) {
             event.preventDefault();
-            const fileName = document.getElementById("fileName").value;
-            const filePath = document.getElementById("filePath").value;
-            const fileType = document.getElementById("fileType").value;
-            const fileSize = document.getElementById("fileSize").value;
+            const fileInput = document.getElementById("fileInput").files[0];
+            if (!fileInput) {
+                showError("Por favor, selecciona un archivo.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", fileInput);
+            formData.append("folderId", selectedFolderId);
 
             const response = await fetch(`${API_BASE_URL}/files/create`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
                     Authorization: TOKEN,
                 },
-                body: JSON.stringify({
-                    name: fileName,
-                    path: filePath,
-                    type: fileType,
-                    size: fileSize,
-                    folderId: selectedFolderId,
-                }),
+                body: formData,
             });
 
             if (response.ok) {
-                showSuccess("¡Archivo creado con éxito!.");
-                createFileModal.style.display = "none";
-                fetchFolders();
+                showSuccess("¡Archivo subido con éxito!.");
+                //Ocultar la lista de archivos modales y actualizar
+                uploadFileModal.style.display = "none";
+                const files = await fetchFiles(selectedFolderId);
+                renderFiles(files);
             } else {
                 const errorText = await response.text();
                 showError(`Error: ${errorText}`);
@@ -159,49 +170,35 @@ document.addEventListener("DOMContentLoaded", function () {
                 <div class="folder-options">
                     <button class="options-btn">...</button>
                     <div class="options-menu" style="display: none;">
-                        <button class="create-folder-btn">Crear Carpeta</button>
-                        <button class="create-file-btn">Crear Archivo</button>
+                        <button class="uploadFileBtn">Subir Archivos</button>
                         <button class="delete-folder-btn">Eliminar Carpeta</button>
                     </div>
                 </div>
             `;
-            // Verifica que los botones existan antes de agregarles eventos
+
             const optionsBtn = folderDiv.querySelector(".options-btn");
-            const createFileBtn = folderDiv.querySelector(".create-file-btn");
+            const optionsMenu = folderDiv.querySelector(".options-menu");
+            const uploadFileBtn = folderDiv.querySelector(".uploadFileBtn");
             const deleteFolderBtn = folderDiv.querySelector(".delete-folder-btn");
 
-            if (optionsBtn) {
-                optionsBtn.addEventListener("click", (event) => {
-                    event.stopPropagation();
-                    const menu = folderDiv.querySelector(".options-menu");
-                    if (menu) {
-                        menu.style.display = menu.style.display === "none" ? "block" : "none";
-                    }
-                });
-            }
-
-            if (createFileBtn) {
-                createFileBtn.addEventListener("click", (event) => {
-                    event.stopPropagation();
-                    selectedFolderId = folder.id;
-                    createFileModal.style.display = "block";
-                });
-            }
-
-            if (deleteFolderBtn) {
-                deleteFolderBtn.addEventListener("click", async (event) => {
-                    event.stopPropagation();
-                    if (confirm("¿Estás seguro de que quieres eliminar esta carpeta?")) {
-                        await deleteFolder(folder.id);
-                    }
-                });
-            }
-
-            folderDiv.addEventListener("click", async () => {
-                selectedFolderId = folder.id;
-                const files = await fetchFiles(selectedFolderId);
-                renderFiles(files);
+            optionsBtn.addEventListener("click", (event) => {
+                event.stopPropagation();
+                optionsMenu.style.display = optionsMenu.style.display === "none" ? "block" : "none";
             });
+
+            uploadFileBtn.addEventListener("click", (event) => {
+                event.stopPropagation();
+                selectedFolderId = folder.id;
+                uploadFileModal.style.display = "block";
+            });
+
+            deleteFolderBtn.addEventListener("click", async (event) => {
+                event.stopPropagation();
+                if (confirm("¿Estás seguro de que quieres eliminar esta carpeta?")) {
+                    await deleteFolder(folder.id);
+                }
+            });
+
             foldersContainer.appendChild(folderDiv);
         });
     }
@@ -210,28 +207,23 @@ document.addEventListener("DOMContentLoaded", function () {
     function renderFiles(files) {
         filesContainer.innerHTML = "";
 
-        if (files && files.length > 0) {
-            files.forEach((file) => {
-                const fileDiv = document.createElement("div");
-                fileDiv.className = "file";
-                fileDiv.innerHTML = `
+        files.forEach((file) => {
+            const fileDiv = document.createElement("div");
+            fileDiv.className = "file";
+            fileDiv.innerHTML = `
                 <span>${file.name}</span>
-                <button class="delete-file-btn">Eliminar</button
-                `;
+                <button class="delete-file-btn" data-file-id="${file.id}">Eliminar Archivo</button>
+            `;
 
-                const deleteFileBtn = fileDiv.querySelector(".delete-file-btn");
-
-                if (deleteFileBtn) {
-                    deleteFileBtn.addEventListener("click", async (event) => {
-                        event.stopPropagation();
-                        if (confirm("¿Estás seguro de que quieres eliminar este archivo?")) {
-                            await deleteFile(file.id);
-                        }
-                    });
+            const deleteFileBtn = fileDiv.querySelector(".delete-file-btn");
+            deleteFileBtn.addEventListener("click", async () => {
+                if (confirm("¿Estás seguro de que quieres eliminar este archivo?")) {
+                    await deleteFile(file.id);
                 }
-                filesContainer.appendChild(fileDiv);
             });
-        }
+
+            filesContainer.appendChild(fileDiv);
+        });
     }
 
     // Eliminar carpeta
@@ -271,7 +263,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-
     // Mostrar mensajes de error
     function showError(message) {
         const errorMessage = document.getElementById("errorMessage");
@@ -292,14 +283,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 3000); // Ocultar después de 3 segundos
     }
 
-    // botón Cerrar sesión
-    logoutBtn.onclick = function () {
-        if (confirm("¿Estás seguro de que quieres cerrar sesión?")) {
-            localStorage.removeItem("token");
-            window.location.href = "index.html"; // Redirect to index.html
-        }
-    };
-
     // Mostrar el modal de confirmación de cierre de sesión
     logoutBtn.onclick = function () {
         logoutModal.style.display = "block";
@@ -308,7 +291,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // Confirmar cierre de sesión
     confirmLogoutBtn.onclick = function () {
         localStorage.removeItem("token");
-        sessionStorage.removeItem("loggedIn"); // Remove loggedIn flag from sessionStorage
+        localStorage.removeItem("username");
+        localStorage.removeItem("loggedin");
         window.location.href = "index.html"; // Redirigir a index.html
     };
 
